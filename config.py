@@ -45,14 +45,18 @@ def ensure_database_exists(db_name=DB_NAME, server=SQL_SERVER):
 
 
 def get_database_uri():
-    # Ưu tiên biến môi trường CSDL đám mây (Neon / Supabase / PostgreSQL / MySQL)
-    env_db = os.environ.get("SQLALCHEMY_DATABASE_URI") or os.environ.get("DATABASE_URL")
+    # 1. Ưu tiên biến môi trường CSDL đám mây (Neon / Supabase / Vercel Postgres)
+    env_db = (
+        os.environ.get("SQLALCHEMY_DATABASE_URI")
+        or os.environ.get("DATABASE_URL")
+        or os.environ.get("POSTGRES_URL")
+    )
     if env_db:
         if env_db.startswith("postgres://"):
             env_db = env_db.replace("postgres://", "postgresql://", 1)
         return env_db
 
-    # Thử kết nối SQL Server nếu có pyodbc
+    # 2. Thử kết nối SQL Server nếu có pyodbc trên máy Windows local
     if pyodbc:
         try:
             conn_str = (
@@ -77,7 +81,11 @@ def get_database_uri():
         except Exception:
             pass
 
-    # Fallback SQLite local
+    # 3. Fallback SQLite: nếu chạy trên Vercel (môi trường serverless) thì dùng /tmp để có quyền ghi
+    if os.environ.get("VERCEL"):
+        return "sqlite:////tmp/foodienest.db"
+
+    # Chạy local không có SQL Server
     sqlite_path = os.path.join(BASE_DIR, "foodienest.db").replace("\\", "/")
     return f"sqlite:///{sqlite_path}"
 
