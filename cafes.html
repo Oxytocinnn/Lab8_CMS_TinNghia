@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block page_title %}Khám phá Quán Cà phê — FoodieNest{% endblock %}
+
+{% block page_content %}
+<div style="margin-bottom: 25px;">
+  <h2 style="font-weight:800;color:#0f172a;margin-top:0;font-size:26px;">
+    ☕ Khám phá Quán Cà phê & Địa điểm Ẩm thực
+  </h2>
+  <p class="text-muted" style="font-size:15px;">
+    Tổng hợp các địa điểm cà phê đặc sản, không gian làm việc và góc thư giãn được cộng đồng FoodieNest yêu thích.
+  </p>
+</div>
+
+<!-- Category Filters -->
+<div style="margin-bottom: 30px; display:flex; gap:8px; flex-wrap:wrap;">
+  <a href="{{ url_for('cafes_list') }}"
+     class="btn btn-sm"
+     style="font-weight:700;border-radius:9999px;padding:7px 18px;{{ 'background:#ea580c;color:#fff;border:none;' if not active_cat else 'background:#fff;color:#475569;border:1px solid #cbd5e1;' }}">
+    Tất cả danh mục
+  </a>
+  {% for cat in categories %}
+    <a href="{{ url_for('cafes_list', category_id=cat.id) }}"
+       class="btn btn-sm"
+       style="font-weight:700;border-radius:9999px;padding:7px 18px;{{ 'background:#ea580c;color:#fff;border:none;' if active_cat == cat.id else 'background:#fff;color:#475569;border:1px solid #cbd5e1;' }}">
+      {{ cat.name }}
+    </a>
+  {% endfor %}
+</div>
+
+<!-- Cafes Grid -->
+<div class="row">
+  {% for cafe in cafes %}
+    <div class="col-md-4 col-sm-6" style="margin-bottom:24px;">
+      <div class="cafe-card">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <span class="badge-category">{{ cafe.category.name }}</span>
+            <span style="font-weight:700;font-size:12.5px;color:#ea580c;">
+              <i class="fa-solid fa-comment-dots"></i> {{ cafe.comments | length }}
+            </span>
+          </div>
+
+          <h3 style="margin-top:0;margin-bottom:8px;font-weight:800;font-size:19px;">
+            <a href="{{ url_for('cafe_detail', cafe_id=cafe.id) }}" style="color:#0f172a;text-decoration:none;">
+              {{ cafe.name }}
+            </a>
+          </h3>
+
+          <p class="text-muted" style="font-size:13px;margin-bottom:10px;">
+            <i class="fa-solid fa-location-dot text-danger"></i> {{ cafe.address }}
+          </p>
+
+          <p style="color:#d97706;font-weight:700;font-size:13.5px;margin-bottom:12px;">
+            <i class="fa-solid fa-tag"></i> {{ cafe.price_range }}
+          </p>
+
+          <p style="color:#475569;font-size:13.5px;line-height:1.6;margin-bottom:16px;">
+            {{ cafe.description | truncate(110) }}
+          </p>
+        </div>
+
+        <div style="border-top:1px solid #f1f5f9;padding-top:14px;display:flex;justify-content:space-between;align-items:center;">
+          <small class="text-muted">Đánh giá cộng đồng</small>
+          <a href="{{ url_for('cafe_detail', cafe_id=cafe.id) }}" class="btn btn-sm btn-primary-custom" style="padding:6px 16px;border-radius:9999px;font-size:12.5px;">
+            Xem & Đánh giá <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="col-md-12">
+      <div class="modern-card text-center" style="padding:40px;">
+        <i class="fa-solid fa-mug-saucer" style="font-size:40px;color:#cbd5e1;margin-bottom:10px;"></i>
+        <h4>Không tìm thấy quán nào trong danh mục này.</h4>
+        <a href="{{ url_for('cafes_list') }}" class="btn btn-default" style="margin-top:10px;border-radius:9999px;">
+          Quay lại tất cả quán
+        </a>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

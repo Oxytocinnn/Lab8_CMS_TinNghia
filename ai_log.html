@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block page_title %}Nhật ký sử dụng AI (Buổi 39) — FoodieNest{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+  .markdown-content {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #334155;
+  }
+  .markdown-content h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    border-bottom: 2px solid #ea580c;
+    padding-bottom: 12px;
+    margin-top: 0;
+  }
+  .markdown-content h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #c2410c;
+    margin-top: 30px;
+  }
+  .markdown-content h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  .markdown-content pre {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 14px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13.5px;
+  }
+  .markdown-content blockquote {
+    border-left: 4px solid #ea580c;
+    background: #fff7ed;
+    color: #9a3412;
+    padding: 12px 18px;
+    border-radius: 0 8px 8px 0;
+  }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+    <div class="modern-card" style="background:#eff6ff;border-color:#bfdbfe;margin-bottom:20px;">
+      <h4 style="font-weight:800;color:#1e40af;margin-top:0;">
+        <i class="fa-solid fa-graduation-cap"></i> Nội dung học tập Buổi 39 — AI-assisted Coding & Ethics
+      </h4>
+      <p style="color:#1e3a8a;font-size:14px;margin-bottom:0;line-height:1.6;">
+        Trang này hiển thị nhật ký tương tác với công cụ AI, quá trình Prompting, kiểm thử phát hiện lỗ hổng bảo mật thủ công (Manual Security Review) và ranh giới đạo đức học thuật trong môn học PWD301.
+      </p>
+    </div>
+
+    <div class="modern-card markdown-content">
+      {{ content | safe }}
+    </div>
+  </div>
+</div>
+{% endblock %}

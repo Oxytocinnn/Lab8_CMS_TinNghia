@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block page_title %}Trang chủ — FoodieNest{% endblock %}
+
+{% block page_content %}
+<!-- Hero Banner -->
+<div class="hero-banner">
+  <div class="row" style="align-items:center;">
+    <div class="col-md-8">
+      <h1><i class="fa-solid fa-mug-hot"></i> Khám phá Cà phê & Ẩm thực</h1>
+      <p>
+        Cộng đồng chia sẻ trải nghiệm không gian cà phê, trà bánh và ẩm thực nguyên bản. Theo dõi các Food Blogger để cập nhật bảng tin đánh giá chân thực nhất.
+      </p>
+      <div style="margin-top:20px;">
+        <a href="{{ url_for('cafes_list') }}" class="btn btn-warning" style="font-weight:700;border-radius:9999px;padding:8px 20px;">
+          <i class="fa-solid fa-compass"></i> Khám phá quán
+        </a>
+        <a href="{{ url_for('review_list') }}" class="btn btn-default" style="font-weight:700;border-radius:9999px;padding:8px 20px;margin-left:8px;background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.3);">
+          <i class="fa-solid fa-book-open"></i> Đọc Blog Review
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4 text-center hidden-xs hidden-sm">
+      <i class="fa-solid fa-mug-saucer" style="font-size:110px;color:rgba(251,191,36,0.25);"></i>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="d-flex" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+      <div>
+        <h3 style="margin:0;font-weight:800;color:#1e293b;font-size:20px;">
+          {% if show_followed %}
+            <i class="fa-solid fa-user-check text-warning"></i> Bài viết từ Blogger bạn theo dõi
+          {% else %}
+            <i class="fa-solid fa-globe text-primary"></i> Tất cả bài viết mới nhất
+          {% endif %}
+        </h3>
+        <small class="text-muted">Trạng thái bộ lọc được lưu tự động bằng Cookie (30 ngày)</small>
+      </div>
+
+      <div class="feed-toggle-box">
+        <a href="{{ url_for('home', show='all') }}" class="{{ 'active' if not show_followed else '' }}">
+          <i class="fa-solid fa-list-ul"></i> Tất cả
+        </a>
+        <a href="{{ url_for('home', show='followed') }}" class="{{ 'active' if show_followed else '' }}">
+          <i class="fa-solid fa-users"></i> Đang theo dõi
+        </a>
+      </div>
+    </div>
+
+    {% for post in posts %}
+      <div class="modern-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <div style="display:flex; align-items:center;">
+            <img src="{{ post.author.gravatar_url(38) }}" class="avatar-circle" width="38" height="38" style="box-shadow:0 2px 6px rgba(0,0,0,0.1); margin-right:12px;">
+            <div>
+              <div style="font-weight:700;font-size:14.5px;">
+                <a href="{{ url_for('user_profile', username=post.author.username) }}" style="color:#1e293b;text-decoration:none;">
+                  {{ post.author.username }}
+                </a>
+                {% if post.author.role.name == 'FoodBlogger' %}
+                  <span class="badge-role-blogger" style="margin-left:5px;">Food Blogger</span>
+                {% elif post.author.role.name == 'Admin' %}
+                  <span class="badge-role-admin" style="margin-left:5px;">Admin</span>
+                {% endif %}
+              </div>
+              <small class="text-muted"><i class="fa-regular fa-clock"></i> {{ post.created_at.strftime('%d/%m/%Y lúc %H:%M') }}</small>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:0;margin-bottom:10px;font-weight:700;font-size:20px;line-height:1.4;">
+          <a href="{{ url_for('review_detail', post_id=post.id) }}" style="color:#0f172a;text-decoration:none;">
+            {{ post.title }}
+          </a>
+        </h3>
+
+        {% if post.summary %}
+          <p style="color:#475569;font-size:15px;line-height:1.6;margin-bottom:16px;">
+            {{ post.summary }}
+          </p>
+        {% endif %}
+
+        <div style="border-top:1px solid #f1f5f9;padding-top:14px;display:flex;justify-content:space-between;align-items:center;">
+          <a href="{{ url_for('review_detail', post_id=post.id) }}" class="btn btn-sm btn-default" style="font-weight:600;border-radius:9999px;padding:6px 16px;">
+            Đọc bài viết đầy đủ <i class="fa-solid fa-arrow-right"></i>
+          </a>
+          <small class="text-muted"><i class="fa-solid fa-shield-halved text-success"></i> Bleach Sanitized</small>
+        </div>
+      </div>
+    {% else %}
+      <div class="modern-card text-center" style="padding:40px 20px;">
+        <i class="fa-regular fa-folder-open" style="font-size:45px;color:#94a3b8;margin-bottom:15px;"></i>
+        {% if show_followed %}
+          <h4 style="font-weight:700;color:#334155;">Chưa có bài viết nào từ người bạn theo dõi</h4>
+          <p class="text-muted">Hãy theo dõi các Food Blogger để nhận bài viết mới nhất trên bảng tin của bạn.</p>
+          <a href="{{ url_for('home', show='all') }}" class="btn btn-warning" style="border-radius:9999px;font-weight:600;margin-top:10px;">
+            Xem tất cả bài viết
+          </a>
+        {% else %}
+          <h4 style="font-weight:700;color:#334155;">Chưa có bài viết nào trên hệ thống</h4>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="col-md-4">
+    {% if not current_user.is_authenticated %}
+      <!-- Call to Action Box for Guest Users -->
+      <div class="modern-card" style="background:linear-gradient(135deg, #fff7ed, #ffedd5);border-color:#fed7aa;">
+        <h4 style="font-weight:800;color:#9a3412;margin-top:0;">
+          <i class="fa-solid fa-heart"></i> Tham gia FoodieNest
+        </h4>
+        <p style="color:#7c2d12;font-size:13.5px;line-height:1.5;">
+          Đăng ký tài khoản để theo dõi blogger yêu thích, lưu bảng tin cá nhân và viết đánh giá cho các quán cà phê.
+        </p>
+        <div style="margin-top:15px;display:flex;gap:8px;">
+          <a href="{{ url_for('login') }}" class="btn btn-default btn-sm" style="flex:1;font-weight:700;border-radius:9999px;background:#fff;border-color:#fdba74;color:#9a3412;">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập
+          </a>
+          <a href="{{ url_for('register') }}" class="btn btn-warning btn-sm" style="flex:1;font-weight:700;border-radius:9999px;background:#ea580c;border:none;">
+            <i class="fa-solid fa-user-plus"></i> Đăng ký
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Featured Cafes Card -->
+    <div class="modern-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+        <h4 style="margin:0;font-weight:800;color:#1e293b;font-size:16px;">
+          <i class="fa-solid fa-location-dot text-danger"></i> Quán Cà phê Nổi bật
+        </h4>
+        <a href="{{ url_for('cafes_list') }}" style="font-size:13px;font-weight:600;color:#ea580c;">Xem tất cả</a>
+      </div>
+
+      <div class="list-group" style="box-shadow:none;margin-bottom:0;">
+        {% for cafe in cafes %}
+          <div style="padding:12px 0;border-bottom:1px solid #f1f5f9;">
+            <div style="font-weight:700;font-size:15px;margin-bottom:4px;">
+              <a href="{{ url_for('cafe_detail', cafe_id=cafe.id) }}" style="color:#1e293b;text-decoration:none;">
+                {{ cafe.name }}
+              </a>
+            </div>
+            <p class="text-muted" style="font-size:12.5px;margin-bottom:6px;">
+              📍 {{ cafe.address }}
+            </p>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="badge-category" style="font-size:11px;">{{ cafe.category.name }}</span>
+              <span style="font-size:12px;font-weight:700;color:#ea580c;">
+                💬 {{ cafe.comments | length }} đánh giá
+              </span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Quick Demo Guide Card -->
+    <div class="modern-card" style="background:#f8fafc;">
+      <h4 style="font-weight:800;color:#334155;margin-top:0;font-size:15px;">
+        <i class="fa-solid fa-lightbulb text-warning"></i> Kịch bản Demo Chapter 08
+      </h4>
+      <ul style="padding-left:18px;margin-bottom:0;color:#475569;font-size:13px;line-height:1.7;">
+        <li>Bấm <b>Đăng nhập</b> hoặc chọn <b>⚡ Demo</b> (góc trên) để vào nhanh tài khoản.</li>
+        <li>Chuyển tab <b>Tất cả</b> &harr; <b>Đang theo dõi</b> để kiểm tra Cookie.</li>
+        <li>Vào <b>Quán Cà Phê</b> gửi review chứa <code>&lt;script&gt;</code> để xem Bleach lọc XSS.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

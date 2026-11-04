@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block page_title %}Blog Review Ẩm thực — FoodieNest{% endblock %}
+
+{% block page_content %}
+<div class="row">
+  <div class="col-md-8">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h2 style="font-weight:800;color:#0f172a;margin:0;font-size:26px;">
+          📝 Blog Review Ẩm thực & Quán Cà phê
+        </h2>
+        <p class="text-muted" style="margin:4px 0 0 0;font-size:14.5px;">
+          Bài viết chuyên sâu do các Food Blogger và ban quản trị FoodieNest biên tập.
+        </p>
+      </div>
+      {% if current_user.is_authenticated and current_user.can(Permission.WRITE_POST) %}
+        <a href="{{ url_for('review_new') }}" class="btn btn-warning" style="font-weight:700;border-radius:9999px;padding:8px 20px;background:#ea580c;border:none;">
+          <i class="fa-solid fa-pen-nib"></i> + Viết Review Mới
+        </a>
+      {% endif %}
+    </div>
+
+    {% for post in posts.items %}
+      <div class="modern-card">
+        <div style="display:flex;align-items:center;margin-bottom:12px;">
+          <img src="{{ post.author.gravatar_url(36) }}" class="avatar-circle" width="36" height="36" style="margin-right:10px;">
+          <div>
+            <a href="{{ url_for('user_profile', username=post.author.username) }}" style="font-weight:700;color:#1e293b;text-decoration:none;">
+              {{ post.author.username }}
+            </a>
+            {% if post.author.role.name == 'FoodBlogger' %}
+              <span class="badge-role-blogger" style="margin-left:5px;">Food Blogger</span>
+            {% elif post.author.role.name == 'Admin' %}
+              <span class="badge-role-admin" style="margin-left:5px;">Admin</span>
+            {% endif %}
+            <div class="text-muted" style="font-size:12px;">
+              <i class="fa-regular fa-calendar"></i> {{ post.created_at.strftime('%d/%m/%Y lúc %H:%M') }}
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:0;margin-bottom:10px;font-weight:800;font-size:20px;">
+          <a href="{{ url_for('review_detail', post_id=post.id) }}" style="color:#0f172a;text-decoration:none;">
+            {{ post.title }}
+          </a>
+        </h3>
+
+        {% if post.summary %}
+          <p style="color:#475569;font-size:14.5px;line-height:1.6;margin-bottom:16px;">
+            {{ post.summary }}
+          </p>
+        {% endif %}
+
+        <div style="border-top:1px solid #f1f5f9;padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
+          <a href="{{ url_for('review_detail', post_id=post.id) }}" class="btn btn-sm btn-default" style="font-weight:600;border-radius:9999px;padding:5px 16px;">
+            Đọc toàn bộ bài viết <i class="fa-solid fa-arrow-right"></i>
+          </a>
+          <small class="text-muted"><i class="fa-solid fa-shield-halved text-success"></i> Bleach Cleaned</small>
+        </div>
+      </div>
+    {% else %}
+      <div class="modern-card text-center" style="padding:40px;">
+        <i class="fa-regular fa-file-lines" style="font-size:40px;color:#cbd5e1;margin-bottom:10px;"></i>
+        <h4>Chưa có bài viết nào trên hệ thống.</h4>
+      </div>
+    {% endfor %}
+
+    <!-- Pager phan trang hien dai -->
+    <nav class="text-center" style="margin-top:20px;">
+      <ul class="pager" style="margin:0;">
+        {% if posts.has_prev %}
+          <li class="previous">
+            <a href="{{ url_for('review_list', page=posts.prev_num) }}" style="border-radius:9999px;font-weight:600;padding:8px 20px;">
+              &larr; Trang trước
+            </a>
+          </li>
+        {% else %}
+          <li class="previous disabled">
+            <span style="border-radius:9999px;padding:8px 20px;">&larr; Trang trước</span>
+          </li>
+        {% endif %}
+
+        <li style="display:inline-block;padding:8px 15px;font-weight:700;color:#64748b;">
+          Trang {{ posts.page }} / {{ posts.pages }} ({{ posts.total }} bài viết)
+        </li>
+
+        {% if posts.has_next %}
+          <li class="next">
+            <a href="{{ url_for('review_list', page=posts.next_num) }}" style="border-radius:9999px;font-weight:600;padding:8px 20px;">
+              Trang sau &rarr;
+            </a>
+          </li>
+        {% else %}
+          <li class="next disabled">
+            <span style="border-radius:9999px;padding:8px 20px;">Trang sau &rarr;</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="col-md-4">
+    <div class="modern-card">
+      <h4 style="font-weight:800;color:#1e293b;margin-top:0;font-size:16px;">
+        <i class="fa-solid fa-circle-info text-primary"></i> Về CMS Blog FoodieNest
+      </h4>
+      <p class="text-muted" style="font-size:13.5px;line-height:1.6;margin-bottom:0;">
+        Các bài viết được định dạng bằng <b>Markdown</b> phong phú (tiêu đề h1-h3, in đậm, nghiêng, trích dẫn, ảnh, bảng biểu).
+        Mọi nội dung HTML đều được lọc sạch bằng <code>bleach.clean(strip=True)</code> để phòng chống triệt để các cuộc tấn công Stored XSS.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

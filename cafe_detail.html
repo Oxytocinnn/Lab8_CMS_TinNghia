@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ cafe.name }} — FoodieNest{% endblock %}
+
+{% block page_content %}
+<ol class="breadcrumb" style="background:transparent;padding:0;margin-bottom:20px;font-size:13.5px;">
+  <li><a href="{{ url_for('home') }}" style="color:#ea580c;">Trang chủ</a></li>
+  <li><a href="{{ url_for('cafes_list') }}" style="color:#ea580c;">Quán Cà Phê</a></li>
+  <li class="active text-muted">{{ cafe.name }}</li>
+</ol>
+
+<div class="modern-card" style="background:#ffffff;border-left:5px solid #ea580c;">
+  <div class="row" style="align-items:center;">
+    <div class="col-md-8">
+      <span class="badge-category" style="margin-bottom:8px;">{{ cafe.category.name }}</span>
+      <h1 style="margin-top:5px;font-size:28px;font-weight:800;color:#0f172a;">{{ cafe.name }}</h1>
+      <p style="font-size:15px;color:#475569;margin-bottom:6px;">
+        <i class="fa-solid fa-location-dot text-danger"></i> <b>Địa chỉ:</b> {{ cafe.address }}
+      </p>
+      <p style="font-size:15px;color:#d97706;font-weight:700;margin-bottom:12px;">
+        <i class="fa-solid fa-tag"></i> <b>Khoảng giá:</b> {{ cafe.price_range }}
+      </p>
+      <p style="font-size:15px;line-height:1.7;color:#334155;margin-bottom:0;">
+        {{ cafe.description }}
+      </p>
+    </div>
+    <div class="col-md-4 text-center">
+      <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:14px;padding:24px 15px;">
+        <span style="font-size:13.5px;font-weight:700;color:#9a3412;text-transform:uppercase;letter-spacing:0.5px;">Tổng lượt đánh giá</span>
+        <div style="font-size:46px;font-weight:800;color:#ea580c;margin:6px 0;">
+          {{ cafe.comments | length }}
+        </div>
+        <small class="text-muted"><i class="fa-solid fa-users"></i> Khách hàng đã nhận xét</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <h3 style="font-weight:800;color:#0f172a;font-size:20px;margin-bottom:18px;">
+      <i class="fa-solid fa-comments text-warning"></i> Đánh giá & Trải nghiệm thực tế
+    </h3>
+
+    {% if current_user.is_authenticated %}
+      <div class="modern-card" style="border-color:#fed7aa;background:#fffdfb;">
+        <h4 style="margin-top:0;font-weight:700;color:#9a3412;font-size:16px;">
+          <i class="fa-solid fa-pen-to-square"></i> Viết đánh giá của bạn cho quán
+        </h4>
+        <form method="POST" action="{{ url_for('add_cafe_comment', cafe_id=cafe.id) }}">
+          {{ form.hidden_tag() }}
+
+          <div class="form-group">
+            <label class="control-label" style="font-weight:700;">{{ form.rating.label.text }}</label>
+            {{ form.rating(class="form-control", style="max-width:300px;font-weight:600;") }}
+          </div>
+
+          <div class="form-group">
+            <label class="control-label" style="font-weight:700;">{{ form.body_md.label.text }}</label>
+            <p class="text-muted" style="font-size:12.5px;margin-bottom:6px;">
+              Hỗ trợ Markdown cơ bản: <code>**in đậm**</code>, <code>*in nghiêng*</code>, <code>`code`</code>, <code>[link](url)</code>.
+              <i>(Thẻ tiêu đề h1-h3 tự động bị loại bỏ để giữ bố cục).</i>
+            </p>
+            {{ form.body_md(class="form-control", rows="4", placeholder="Cảm nhận của bạn về đồ uống, giá cả, không gian...") }}
+          </div>
+
+          <button type="submit" class="btn btn-primary-custom" style="padding:8px 24px;">
+            <i class="fa-solid fa-paper-plane"></i> Gửi đánh giá
+          </button>
+        </form>
+      </div>
+    {% else %}
+      <div class="modern-card text-center" style="background:#f8fafc;border:1.5px dashed #cbd5e1;padding:30px;">
+        <i class="fa-solid fa-lock" style="font-size:32px;color:#94a3b8;margin-bottom:10px;"></i>
+        <h4 style="font-weight:700;color:#334155;margin-top:0;">Đăng nhập để chia sẻ đánh giá</h4>
+        <p class="text-muted" style="max-width:400px;margin:0 auto 15px auto;">
+          Vui lòng đăng nhập hoặc tạo tài khoản mới để gửi đánh giá và chấm điểm sao cho quán cà phê này.
+        </p>
+        <a href="{{ url_for('login') }}" class="btn btn-warning" style="font-weight:700;border-radius:9999px;padding:7px 22px;background:#ea580c;border:none;">
+          <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập ngay
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-default" style="font-weight:700;border-radius:9999px;padding:7px 22px;margin-left:8px;">
+          Đăng ký
+        </a>
+      </div>
+    {% endif %}
+
+    <!-- Comment list -->
+    <div style="margin-top:25px;">
+      {% for c in cafe.comments %}
+        <div class="modern-card" style="padding:18px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;">
+              <img src="{{ c.author.gravatar_url(32) }}" class="avatar-circle" width="32" height="32" style="margin-right:10px;">
+              <div>
+                <a href="{{ url_for('user_profile', username=c.author.username) }}" style="font-weight:700;color:#1e293b;text-decoration:none;">
+                  {{ c.author.username }}
+                </a>
+                <span class="text-muted" style="font-size:12px;margin-left:6px;">
+                  &middot; {{ c.created_at.strftime('%d/%m/%Y lúc %H:%M') }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <span class="badge" style="background:#ea580c;font-size:12px;padding:4px 8px;border-radius:6px;">
+                {% for _ in range(c.rating) %}⭐{% endfor %} ({{ c.rating }}/5)
+              </span>
+            </div>
+          </div>
+
+          <div style="color:#334155;font-size:14.5px;line-height:1.6;margin-top:8px;">
+            {{ c.body_html | safe }}
+          </div>
+        </div>
+      {% else %}
+        <p class="text-muted" style="padding:20px 0;">Chưa có đánh giá nào cho quán này. Hãy là người đầu tiên để lại nhận xét!</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <!-- Security Box -->
+    <div class="modern-card" style="background:#fff1f2;border-color:#fecdd3;">
+      <h4 style="font-weight:800;color:#9f1239;margin-top:0;font-size:15px;">
+        <i class="fa-solid fa-shield-halved text-danger"></i> Thử nghiệm Bảo mật XSS (CLO8)
+      </h4>
+      <p style="font-size:13px;color:#881337;line-height:1.6;">
+        Hệ thống được bảo vệ bởi <b>Bleach Sanitizer Whitelist</b>. Bạn có thể thử gửi comment chứa mã độc JavaScript:
+      </p>
+      <pre style="font-size:11px;background:#ffffff;border:1px solid #fda4af;color:#9f1239;padding:10px;border-radius:6px;word-break:break-all;">Quán rất đẹp! &lt;script&gt;alert('XSS')&lt;/script&gt; **Đậm đà**</pre>
+      <p style="font-size:12.5px;color:#881337;margin-bottom:0;">
+        &check; Thẻ <code>&lt;script&gt;</code> sẽ bị loại bỏ hoàn toàn trước khi lưu DB và hiển thị.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

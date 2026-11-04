@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block page_title %}Đăng nhập — FoodieNest{% endblock %}
+
+{% block page_content %}
+<div class="row" style="margin-top: 30px;">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="card-panel">
+      <h2 style="margin-top:0;text-align:center;font-weight:bold;color:#2c3e50;">🔑 Đăng nhập tài khoản</h2>
+      <p class="text-muted text-center" style="margin-bottom:25px;">Tham gia cộng đồng đánh giá ẩm thực và cà phê FoodieNest</p>
+
+      <form method="POST" action="{{ url_for('login') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group {% if form.username.errors %}has-error{% endif %}">
+          {{ form.username.label(class="control-label") }}
+          <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            {{ form.username(class="form-control", placeholder="Nhập tên đăng nhập hoặc email...") }}
+          </div>
+          {% for error in form.username.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group {% if form.password.errors %}has-error{% endif %}">
+          {{ form.password.label(class="control-label") }}
+          <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+            {{ form.password(class="form-control", placeholder="Nhập mật khẩu...") }}
+          </div>
+          {% for error in form.password.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="checkbox">
+          <label>
+            {{ form.remember() }} Ghi nhớ đăng nhập trên thiết bị này
+          </label>
+        </div>
+
+        <div class="form-group" style="margin-top:20px;">
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="font-weight:bold;">
+            <i class="glyphicon glyphicon-log-in"></i> Đăng nhập
+          </button>
+        </div>
+      </form>
+
+      <hr>
+      <div class="well well-sm text-center" style="background:#fcf8e3;border-color:#faebcc;">
+        <p style="margin-bottom:8px;font-weight:bold;color:#8a6d3b;">⚡ Đăng nhập nhanh 1 chạm (Demo trên lớp):</p>
+        <div class="btn-group btn-group-sm">
+          <a href="{{ url_for('quick_login', username='tam_blogger') }}" class="btn btn-warning">tam_blogger (Blogger)</a>
+          <a href="{{ url_for('quick_login', username='an_foodie') }}" class="btn btn-info">an_foodie (Customer)</a>
+          <a href="{{ url_for('quick_login', username='binh_admin') }}" class="btn btn-danger">binh_admin (Admin)</a>
+        </div>
+      </div>
+
+      <p class="text-center" style="margin-bottom:0;font-size:15px;">
+        Chưa có tài khoản? <a href="{{ url_for('register') }}"><b>Đăng ký ngay tại đây</b></a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

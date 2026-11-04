@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block page_title %}Đăng ký tài khoản — FoodieNest{% endblock %}
+
+{% block page_content %}
+<div class="row" style="margin-top: 30px;">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="card-panel">
+      <h2 style="margin-top:0;text-align:center;font-weight:bold;color:#2c3e50;">📝 Đăng ký tài khoản mới</h2>
+      <p class="text-muted text-center" style="margin-bottom:25px;">Tạo tài khoản để theo dõi blogger và chia sẻ trải nghiệm quán</p>
+
+      <form method="POST" action="{{ url_for('register') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group {% if form.username.errors %}has-error{% endif %}">
+          {{ form.username.label(class="control-label") }}
+          <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            {{ form.username(class="form-control", placeholder="Nhập tên đăng nhập (VD: hoang_cafe)...") }}
+          </div>
+          {% for error in form.username.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+          {{ form.email.label(class="control-label") }}
+          <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+            {{ form.email(class="form-control", placeholder="Nhập địa chỉ email (dùng để sinh Gravatar)...") }}
+          </div>
+          {% for error in form.email.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group {% if form.password.errors %}has-error{% endif %}">
+          {{ form.password.label(class="control-label") }}
+          <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+            {{ form.password(class="form-control", placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)...") }}
+          </div>
+          {% for error in form.password.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group {% if form.confirm_password.errors %}has-error{% endif %}">
+          {{ form.confirm_password.label(class="control-label") }}
+          <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-ok"></i></span>
+            {{ form.confirm_password(class="form-control", placeholder="Xác nhận lại mật khẩu...") }}
+          </div>
+          {% for error in form.confirm_password.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group {% if form.role.errors %}has-error{% endif %}">
+          {{ form.role.label(class="control-label") }}
+          {{ form.role(class="form-control") }}
+          {% for error in form.role.errors %}
+            <span class="help-block text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group" style="margin-top:20px;">
+          <button type="submit" class="btn btn-success btn-block btn-lg" style="font-weight:bold;">
+            <i class="glyphicon glyphicon-plus"></i> Tạo tài khoản
+          </button>
+        </div>
+      </form>
+
+      <hr>
+      <p class="text-center" style="margin-bottom:0;font-size:15px;">
+        Đã có tài khoản? <a href="{{ url_for('login') }}"><b>Đăng nhập tại đây</b></a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
