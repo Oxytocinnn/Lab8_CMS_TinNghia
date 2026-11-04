@@ -1,4 +1,5 @@
 import os
+import jinja2
 from flask import Flask, render_template, redirect, url_for, request, flash, make_response, abort
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user
@@ -12,8 +13,24 @@ from forms import LoginForm, RegisterForm, ReviewPostForm, CafeCommentForm
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Hỗ trợ tìm file HTML ở cả thư mục templates lẫn thư mục gốc
+app.jinja_loader = jinja2.ChoiceLoader([
+    jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")),
+    jinja2.FileSystemLoader(os.path.dirname(__file__)),
+])
+
 Bootstrap(app)
 db.init_app(app)
+
+with app.app_context():
+    try:
+        db.create_all()
+        Role.insert_roles()
+        if User.query.count() == 0:
+            from seed import run as seed_run
+            seed_run()
+    except Exception as e:
+        print(f"[Init DB] Info: {e}")
 
 login_manager = LoginManager()
 login_manager.login_view = "login"
@@ -247,7 +264,9 @@ def add_cafe_comment(cafe_id):
 @app.route("/ai-log")
 def ai_log():
     import markdown
-    log_path = os.path.join(os.path.dirname(__file__), "ai_demo", "copilot_log.md")
+    log_path = os.path.join(os.path.dirname(__file__), "copilot_log.md")
+    if not os.path.exists(log_path):
+        log_path = os.path.join(os.path.dirname(__file__), "ai_demo", "copilot_log.md")
     content = ""
     if os.path.exists(log_path):
         with open(log_path, encoding="utf-8") as f:
